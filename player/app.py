@@ -1,3 +1,19 @@
+"""
+Player controller module
+"""
+
+#TODO: Add update method
+#TODO: Add comment
+#TODO: Unit test
+#TODO: Add search feature + Unit test
+#TODO: Add filter for removing + Unit test
+#TODO: Try locust load testing
+#TODO: Add Travis
+#TODO: Add Heroku deployment
+#TODO: Add real DB DAO (SQL Lite)
+#TODO: Add readme
+
+
 from flask.ext.api import status
 from player import app
 from player.dao.BasicDAO import BasicDAO
