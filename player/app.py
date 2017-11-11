@@ -13,13 +13,18 @@ Player controller module
 #TODO: Add real DB DAO (SQL Lite)
 #TODO: Add readme
 
+import json
 
+from flask import request
 from flask_api import status
 
 from player import app
 from player.dao.BasicDAO import BasicDAO
+from player.checker import Checker
+
 from player.exception.exception import AddPlayerException
 from player.exception.exception import RemovePlayerException
+from player.exception.exception import InvalidFormatException, EmptyDataExcpetion
 
 
 @app.route('/delete', methods=['DELETE'])
@@ -35,23 +40,30 @@ def delete():
     else:
         return index()
 
+
+@app.route(rule='/player/attributes', methods=['GET'])
+def get_attributes():
+    checker = Checker()
+    return checker.data_description
+
 @app.route(rule='/create', methods=['POST'])
 def create():
+    #TODO: Use post data to get creation player infos
     """
     Create a player
     :return:
     """
 
-    player_dao = BasicDAO()
-
-    player = {'last_name': 'Gratata', 'first_name': 'Pull up'}
-
+    checker = Checker()
     try:
-        player_dao.add_player(player)
-    except AddPlayerException as e:
-        return {'msg': 'Error during player creation'}, status.HTTP_500_INTERNAL_SERVER_ERROR
+        checker.check_post_datas(request.json)
+    except EmptyDataExcpetion as e:
+        return {"msg": "Empty data"}, status.HTTP_204_NO_CONTENT
+    except InvalidFormatException as e:
+        return checker.missing_attributes, status.HTTP_500_INTERNAL_SERVER_ERROR
     else:
-        return index()
+        return {"infos": request.json}
+
 
 @app.route(rule='/', methods=['GET'])
 def index():
