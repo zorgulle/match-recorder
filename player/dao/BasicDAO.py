@@ -1,9 +1,13 @@
 """
 Basic DAO
 """
+import logging
+
 from player.utils.decorator import singleton
 from player.dao.PlayerDAO import PlayerDAO
 
+from player.exception.exception import AddPlayerException
+from player.exception.exception import RemovePlayerException
 
 
 @singleton
@@ -29,19 +33,25 @@ class BasicDAO(PlayerDAO):
         ]
 
     def get_all_players(self):
-        raise Exception
-        return self.players
+        players = []
+        try:
+            players = self.players
+        except Exception:
+            logging.error(msg="Error while getting players")
+            players = []
+        finally:
+            return players
 
     def add_player(self, player):
         try:
             self.players.append(player)
-            return True
         except Exception:
-            if player in self.players:
-                return True
-            else:
-                return False
+            logging.error(msg="Error during add player")
+            raise AddPlayerException()
 
     def delete_player(self, player):
-        self.players.remove(player)
-        return True
+        try:
+            self.players.remove(player)
+        except Exception:
+            logging.error(msg="Error while deleting player")
+            raise RemovePlayerException()

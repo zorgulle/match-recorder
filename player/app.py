@@ -14,9 +14,13 @@ Player controller module
 #TODO: Add readme
 
 
-from flask.ext.api import status
+from flask_api import status
+
 from player import app
 from player.dao.BasicDAO import BasicDAO
+from player.exception.exception import AddPlayerException
+from player.exception.exception import RemovePlayerException
+
 
 @app.route('/delete', methods=['DELETE'])
 def delete():
@@ -24,12 +28,14 @@ def delete():
 
     player = {'last_name': 'Gratata', 'first_name': 'Pull up'}
 
-    if dao.delete_player(player):
-        return index()
-    else:
+    try:
+        dao.delete_player(player)
+    except RemovePlayerException:
         return {'msg': 'Error during player creation'}, status.HTTP_500_INTERNAL_SERVER_ERROR
+    else:
+        return index()
 
-@app.route(rule='/create', methods=['PUT'])
+@app.route(rule='/create', methods=['POST'])
 def create():
     """
     Create a player
@@ -40,11 +46,12 @@ def create():
 
     player = {'last_name': 'Gratata', 'first_name': 'Pull up'}
 
-    if player_dao.add_player(player):
-        return index()
-    else:
+    try:
+        player_dao.add_player(player)
+    except AddPlayerException as e:
         return {'msg': 'Error during player creation'}, status.HTTP_500_INTERNAL_SERVER_ERROR
-
+    else:
+        return index()
 
 @app.route(rule='/', methods=['GET'])
 def index():
