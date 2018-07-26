@@ -25,13 +25,11 @@ class PlayersInMemory(Players):
             raise PlayerExistException()
         self.__players.append(player)
 
-    def __player_exist(self, player):
-        filter_by_id = lambda x: x.get_id() == player.get_id()
-        player_with_same_id = list(filter(filter_by_id, self.get_all_players()))
+    def __player_exist(self, player_to_add):
 
-        if player_with_same_id:
-            return True
-        return False
+        player_with_same_id = [player for player in self.get_all_players() if player_to_add == player]
+
+        return bool(player_with_same_id)
 
 class PlayerExistException(Exception):
     pass
